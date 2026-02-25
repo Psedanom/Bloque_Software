@@ -139,7 +139,7 @@ describe("TC2005B Module Tests", () => {
                 "Mexico Is Magnificent");
         });
     });
- /* 
+ 
     describe("mcd", () => {
         it("zeros", () => {
             strictEqual(tc2005b.mcd(0, 0), 0);
@@ -208,7 +208,7 @@ describe("TC2005B Module Tests", () => {
             deepStrictEqual(tc2005b.deduplicate([2, 2, 2, 2, 2, 2, 2]), [2]);
         });
     });
-
+/*
     describe("findShortestString", () => {
         it("empty array", () => {
             strictEqual(tc2005b.findShortestString([]), 0);

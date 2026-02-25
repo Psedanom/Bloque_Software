@@ -106,8 +106,8 @@ function capitalize(string) {
     str = str.charAt(0).toUpperCase() + str.slice(1);
 
     // Goes through every character starting from the second one
-    for (let i = 1; i < string.length; i++){
-        
+    for (let i = 1; i < string.length; i++) {
+
         // Checks if there is a space before the sentence
         //   and makes it uppercase
         if (str[i - 1] == " ") {
@@ -119,8 +119,60 @@ function capitalize(string) {
     return str;
 }
 
+function mcd(a, b) {
+    if (b == 0) {
+        return a
+    }
 
+    return mcd(b, a % b)
+}
+
+function hackerSpeak(str) {
+
+    if (str == "") {
+        return str;
+    }
+
+    // replaces all ocurrances lowercase and uppercase of the character
+   str = str.replace(/a/gi, "4")
+   str = str.replace(/e/gi, "3")
+   str = str.replace(/i/gi, "1")
+   str = str.replace(/o/gi, "0")
+   str = str.replace(/s/gi, "5")
+    return str
+}
+
+function factorize(num)
+{
+    let factors = [];
     
+    for(let i = 1;i<=num;i++)
+    {
+        if(num%i==0)
+        {
+            factors.push(i);
+        }
+    }
+    return factors
+}
+
+function deduplicate(arr)
+{
+    let list = [];
+
+    for(let i = 0; i<arr.length; i++)
+    {
+        if(!(list.includes(arr[i])))
+        {
+            list.push(arr[i])
+        }
+    }
+    return list
+}
+
+
+
+
 
 export {
     firstNonRepeating,
@@ -128,11 +180,11 @@ export {
     invertArray,
     invertArrayInplace,
     capitalize,
-    /*
     mcd,
     hackerSpeak,
     factorize,
     deduplicate,
+    /*
     findShortestString,
     isPalindrome,
     sortStrings,
