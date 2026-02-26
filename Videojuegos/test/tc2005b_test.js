@@ -10,7 +10,7 @@
 "use strict";
 
 import { strictEqual, deepStrictEqual } from "assert";
-import * as tc2005b from "../js/tc2005b.js";
+import * as tc2005b from "../js/pablo_sedano.js";
 
 
 describe("TC2005B Module Tests", () => {
@@ -208,7 +208,7 @@ describe("TC2005B Module Tests", () => {
             deepStrictEqual(tc2005b.deduplicate([2, 2, 2, 2, 2, 2, 2]), [2]);
         });
     });
-/*
+
     describe("findShortestString", () => {
         it("empty array", () => {
             strictEqual(tc2005b.findShortestString([]), 0);
@@ -350,5 +350,5 @@ describe("TC2005B Module Tests", () => {
             deepStrictEqual(tc2005b.sortDescending([15, 12, 9, 6, 3]), [15, 12, 9, 6, 3]);
         });
     })
-    */
+    
 });
