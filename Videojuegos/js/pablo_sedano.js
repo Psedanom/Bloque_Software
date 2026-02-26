@@ -1,7 +1,7 @@
 /*
  * Example functions to practice JavaScript
  *
- * Pablo Sedano Morlett
+ * Pablo Sedano Morlett 
  * 2/25/2026
  */
 
