@@ -66,6 +66,7 @@ class Game {
     }
 
     initObjects() {
+        this.scoreLabel = new TextLabel(10, 30, "20px Arial", "black");
         this.player = new Player(new Vector(canvasWidth / 2, canvasHeight / 2), 60, 60, "red");
 
         this.actors = [];
@@ -80,6 +81,7 @@ class Game {
             actor.draw(ctx);
         }
         this.player.draw(ctx);
+        this.scoreLabel.draw(ctx, "Collisions: " + this.collisions);
     }
 
     update(deltaTime) {

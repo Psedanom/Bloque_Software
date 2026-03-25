@@ -99,15 +99,19 @@ class Game {
     }
 
     initObjects() {
-        this.player = new Player(new Vector(canvasWidth / 2, canvasHeight / 2), 60, 60, "red");
-
+        this.scoreLabel = new TextLabel(20, 40, "30px Arial", "white");
+        // Creates the player
+        this.player = new Player(new Vector(canvasWidth / 2, canvasHeight-(canvasHeight*0.1)), canvasHeight*0.25, canvasWidth*0.034, "red"); 
+        
         this.actors = [];
-        for (let i=0; i<10; i++) {
-            this.addBox();
-        }
+
+        // columns, rows
+        this.createLevel(1, 1);
+        
     }
 
     draw(ctx) {
+        this.scoreLabel.draw(ctx, "Score: 0");
         for (let actor of this.actors) {
             actor.draw(ctx);
         }
@@ -121,46 +125,43 @@ class Game {
         // Check collision against other objects
         for (let actor of this.actors) {
             if (boxOverlap(this.player, actor)) {
-                actor.color = "yellow";
-            } else {
-                actor.color = "grey";
+                this.actors.splice(this.actors.indexOf(actor), 1);
+            } 
+        }
+    }
+
+    createLevel(cols, rows) {
+        const blockWidth = canvasWidth / cols;
+        const blockHeight = (canvasHeight / 2) / rows;
+
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                // Center of each block in the grid cell
+                const x = canvasWidth * ((1 + 2 * col) / (2 * cols));
+                const y = (canvasHeight / 2) * ((1 + 2 * row) / (2 * rows));
+
+                const box = new GameObject(new Vector(x, y), blockWidth, blockHeight, "grey");
+                box.destroy = false;
+                this.actors.push(box);
             }
         }
     }
 
-    addBox() {
-        // TODO: Use the randomRange function to make these values different
-        // Create boxes with minimum size 50, and up to 50 pixels more
-        const size = randomRange(50, 50);
-        // Define a random position for the box, within the canvas
-        const posX = randomRange(canvasWidth);
-        const posY = randomRange(canvasHeight);
-        const box = new GameObject(new Vector(posX, posY), size, size, "grey");
-        // Set a property to indicate if the box should be destroyed or not
-        box.destroy = false;
-        this.actors.push(box);
-    }
+    
 
     createEventListeners() {
         window.addEventListener('keydown', (event) => {
-            if (event.key == 'w') {
-                this.addKey('up');
-            } else if (event.key == 'a') {
+            if (event.key == 'a') {
                 this.addKey('left');
-            } else if (event.key == 's') {
-                this.addKey('down');
             } else if (event.key == 'd') {
                 this.addKey('right');
             }
         });
 
         window.addEventListener('keyup', (event) => {
-            if (event.key == 'w') {
-                this.delKey('up');
-            } else if (event.key == 'a') {
+            if (event.key == 'a') {
                 this.delKey('left');
-            } else if (event.key == 's') {
-                this.delKey('down');
+            
             } else if (event.key == 'd') {
                 this.delKey('right');
             }
