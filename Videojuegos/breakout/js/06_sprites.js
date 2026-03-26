@@ -1,5 +1,5 @@
 /*
- * Detection of collisions between boxes
+ * Using sprites to draw more interesting objects
  *
  * Gilberto Echeverria
  * 2025-03-13
@@ -27,11 +27,44 @@ class Player extends GameObject {
     constructor(position, width, height, color, sheetCols) {
         super(position, width, height, color, "player", sheetCols);
         this.velocity = new Vector(0, 0);
+
+        this.motion = {
+            up: {
+                axis: "y",
+                sign: -1,
+            },
+            left: {
+                axis: "x",
+                sign: -1,
+            },
+            down: {
+                axis: "y",
+                sign: 1,
+            },
+            right: {
+                axis: "x",
+                sign: 1,
+            },
+        }
+
+        // Keys pressed to move the player
+        this.keys = [];
     }
 
     update(deltaTime) {
-        // Normalize the velocity verctor to use the same speed on the diagonals
+        // Restart the velocity
+        this.velocity.x = 0;
+        this.velocity.y = 0;
+        // Modify the velocity according to the directions pressed
+        for (const direction of this.keys) {
+            const axis = this.motion[direction].axis;
+            const sign = this.motion[direction].sign;
+            this.velocity[axis] += sign;
+        }
+        // TODO: Normalize the velocity to avoid greater speed on diagonals
+
         this.velocity = this.velocity.normalize().times(playerSpeed);
+
         this.position = this.position.plus(this.velocity.times(deltaTime));
 
         this.clampWithinCanvas();
@@ -66,16 +99,26 @@ class Game {
     }
 
     initObjects() {
-        this.player = new Player(new Vector(canvasWidth / 2, canvasHeight / 2), 60, 60, "red");
+        // Add another object to draw a background
+        this.background = new GameObject(new Vector(canvasWidth / 2, canvasHeight / 2), canvasWidth, canvasHeight);
+        this.background.setSprite("../assets/sprites/trak2_plate2b.png");
+
+        this.player = new Player(new Vector(canvasWidth / 2, canvasHeight / 2),
+                                 48, 64, "red");
+        this.player.setSprite("../assets/sprites/blordrough_quartermaster-NESW.png",
+                                //        x   y    w   h
+                                new Rect(48, 128, 48, 64));
 
         this.actors = [];
-        const box1 = new GameObject(new Vector(300, 300), 80, 80, "grey");
-        this.actors.push(box1);
-        const box2 = new GameObject(new Vector(600, 500), 80, 80, "grey");
-        this.actors.push(box2);
+        for (let i=0; i<10; i++) {
+            this.addBox();
+        }
     }
 
     draw(ctx) {
+        // Draw the background first, so everything else is drawn on top
+        this.background.draw(ctx);
+
         for (let actor of this.actors) {
             actor.draw(ctx);
         }
@@ -88,43 +131,66 @@ class Game {
 
         // Check collision against other objects
         for (let actor of this.actors) {
-            // Naive collision detection, using the distances between objects
-            //if (this.player.position.minus(actor.position).magnitude() < 70) {
-            // Collision detection between the objects
             if (boxOverlap(this.player, actor)) {
-                actor.color = "yellow";
+                //actor.color = "yellow";
+                actor.setSprite("../assets/sprites/RTS_Crate_red.png")
             } else {
-                actor.color = "grey";
+                //actor.color = "grey";
+                actor.setSprite("../assets/sprites/RTS_Crate.png")
             }
         }
     }
 
+    addBox() {
+        // TODO: Use the randomRange function to make these values different
+        // Create boxes with minimum size 50, and up to 50 pixels more
+        const size = randomRange(50, 50);
+        // Define a random position for the box, within the canvas
+        const posX = randomRange(canvasWidth);
+        const posY = randomRange(canvasHeight);
+        const box = new GameObject(new Vector(posX, posY), size, size, "grey");
+        box.setSprite("../assets/sprites/RTS_Crate.png")
+        // Set a property to indicate if the box should be destroyed or not
+        box.destroy = false;
+        this.actors.push(box);
+    }
+
     createEventListeners() {
-        // Simple mechanic for the movement of a character
-        // It breaks if multiple keys are pressed simultaneously
         window.addEventListener('keydown', (event) => {
             if (event.key == 'w') {
-                this.player.velocity.y = -1;
+                this.addKey('up');
             } else if (event.key == 'a') {
-                this.player.velocity.x = -1;
+                this.addKey('left');
             } else if (event.key == 's') {
-                this.player.velocity.y = 1;
+                this.addKey('down');
             } else if (event.key == 'd') {
-                this.player.velocity.x = 1;
+                this.addKey('right');
             }
         });
 
         window.addEventListener('keyup', (event) => {
             if (event.key == 'w') {
-                this.player.velocity.y = 0;
+                this.delKey('up');
             } else if (event.key == 'a') {
-                this.player.velocity.x = 0;
+                this.delKey('left');
             } else if (event.key == 's') {
-                this.player.velocity.y = 0;
+                this.delKey('down');
             } else if (event.key == 'd') {
-                this.player.velocity.x = 0;
+                this.delKey('right');
             }
         });
+    }
+
+    addKey(direction) {
+        if (!this.player.keys.includes(direction)) {
+            this.player.keys.push(direction);
+        }
+    }
+
+    delKey(direction) {
+        if (this.player.keys.includes(direction)) {
+            this.player.keys.splice(this.player.keys.indexOf(direction), 1);
+        }
     }
 }
 
@@ -149,7 +215,6 @@ function main() {
 // Main loop function to be called once per frame
 function drawScene(newTime) {
     // Compute the time elapsed since the last frame, in milliseconds
-    // TODO: Compute the correct value for deltaTime, using newTime and oldTime
     let deltaTime = newTime - oldTime;
 
     // Clean the canvas so we can draw everything again
